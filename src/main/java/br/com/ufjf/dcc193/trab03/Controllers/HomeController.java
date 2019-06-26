@@ -29,5 +29,25 @@ public class HomeController {
         }
     }
 
+    @RequestMapping({"/sobre"})
+    public String sobre (HttpSession session)
+    {
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+//            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+//            if (usuario.getEmail().equals("admin"))
+//            {
+//                return "principal-adm";
+//            }
+//            else
+//            {
+                return "principal-usuario";
+ //           }
+        }
+        else
+        {
+            return "index";
+        }
+    }
 
 }
