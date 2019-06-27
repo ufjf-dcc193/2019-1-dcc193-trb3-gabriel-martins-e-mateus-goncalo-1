@@ -20,6 +20,9 @@ public class Usuario {
     private String email;
     private String chave;
 
+    @OneToMany(mappedBy = "usuario")
+    private Set<Anotacao> anotacoes;
+
     public Usuario (String email, String chave)
     {
         this.email = email;

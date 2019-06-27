@@ -22,6 +22,9 @@ public class Etiqueta {
     @OneToMany(mappedBy = "etiquetaItem")
     private Set<ItemEtiqueta> itemEtiquetas;
 
+    @OneToMany(mappedBy = "etiquetaVinculo")
+    private Set<VinculoEtiqueta> etiquetaVinculo;
+
     public Etiqueta(Long id, String titulo, String descricao, String url) {
         this.id = id;
         this.titulo = titulo;
@@ -78,5 +81,12 @@ public class Etiqueta {
         this.itemEtiquetas = itemEtiquetas;
     }
 
+    public Set<VinculoEtiqueta> getEtiquetaVinculo() {
+        return etiquetaVinculo;
+    }
+
+    public void setEtiquetaVinculo(Set<VinculoEtiqueta> etiquetaVinculo) {
+        this.etiquetaVinculo = etiquetaVinculo;
+    }
     
 }

@@ -2,7 +2,6 @@ package br.com.ufjf.dcc193.trab03.Models;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,6 +18,15 @@ public class Item {
     
     @OneToMany(mappedBy = "itemEtiqueta")
     private Set<ItemEtiqueta> itemEtiquetas;
+
+    @OneToMany(mappedBy = "item")
+    private Set<Anotacao> anotacoes;
+
+    @OneToMany(mappedBy = "vinculoEntrada")
+    private Set<Vinculo> vinculosEntrada;
+
+    @OneToMany(mappedBy = "vinculoSaida")
+    private Set<Vinculo> vinculosSaida;
 
     public Item() {
     }
@@ -50,6 +58,30 @@ public class Item {
 
     public void setItemEtiquetas(Set<ItemEtiqueta> itemEtiquetas) {
         this.itemEtiquetas = itemEtiquetas;
+    }
+
+    public Set<Anotacao> getAnotacoes() {
+        return anotacoes;
+    }
+
+    public void setAnotacoes(Set<Anotacao> anotacoes) {
+        this.anotacoes = anotacoes;
+    }
+
+    public Set<Vinculo> getVinculosEntrada() {
+        return vinculosEntrada;
+    }
+
+    public void setVinculosEntrada(Set<Vinculo> vinculosEntrada) {
+        this.vinculosEntrada = vinculosEntrada;
+    }
+
+    public Set<Vinculo> getVinculosSaida() {
+        return vinculosSaida;
+    }
+
+    public void setVinculosSaida(Set<Vinculo> vinculosSaida) {
+        this.vinculosSaida = vinculosSaida;
     }
 
     
