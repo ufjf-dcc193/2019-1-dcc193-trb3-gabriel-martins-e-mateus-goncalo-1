@@ -2,7 +2,6 @@ package br.com.ufjf.dcc193.trab03.Models;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -79,5 +78,13 @@ public class Usuario {
     public void setChave(String chave) {
         this.chave = chave;
     }
-    
+
+    public Set<Anotacao> getAnotacoes() {
+        return anotacoes;
+    }
+
+    public void setAnotacoes(Set<Anotacao> anotacoes) {
+        this.anotacoes = anotacoes;
+    }
+
 }

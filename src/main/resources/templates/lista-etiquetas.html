@@ -9,13 +9,11 @@
         <a th:href="@{/cadastro-etiqueta}"><button type="button" class="btn btn-lg btn-block btn-outline-primary">Cadastrar etiqueta</button></a>
         <table class="table table-dark">
             <thead>
-              <tr>
                   <tr> 
                       <th scope="col">Título</th>
                       <th scope="col">Descrição</th>
                       <th scope="col">URL</th>
                   </tr>
-              </tr>
             </thead>
             <tbody>
                 <tr th:each="etiqueta: ${etiquetas}" th:object="${etiqueta}">

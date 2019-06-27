@@ -58,7 +58,7 @@ public class Vinculo {
 
     public void setAnotacoes(Set<Anotacao> anotacoes) {
         this.anotacoes = anotacoes;
-    }
+    } 
 
     public Vinculo() {
 

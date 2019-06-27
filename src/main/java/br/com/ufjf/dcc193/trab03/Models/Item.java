@@ -66,7 +66,7 @@ public class Item {
 
     public void setAnotacoes(Set<Anotacao> anotacoes) {
         this.anotacoes = anotacoes;
-    }
+    } 
 
     public Set<Vinculo> getVinculosEntrada() {
         return vinculosEntrada;

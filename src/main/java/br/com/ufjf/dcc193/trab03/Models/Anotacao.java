@@ -110,6 +110,5 @@ public class Anotacao {
         this.vinculo = vinculo;
     }
 
-
     
 }
