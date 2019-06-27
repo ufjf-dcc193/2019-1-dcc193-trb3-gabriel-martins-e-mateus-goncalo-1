@@ -20,9 +20,6 @@ public class Usuario {
     private String email;
     private String chave;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private Set<Anotacao> anotacoes;
-
     public Usuario (String email, String chave)
     {
         this.email = email;
@@ -79,14 +76,5 @@ public class Usuario {
     public void setChave(String chave) {
         this.chave = chave;
     }
-
-    public Set<Anotacao> getAnotacoes() {
-        return anotacoes;
-    }
-
-    public void setAnotacoes(Set<Anotacao> anotacoes) {
-        this.anotacoes = anotacoes;
-    }
-    
     
 }

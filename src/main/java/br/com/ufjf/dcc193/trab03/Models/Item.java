@@ -3,11 +3,13 @@ package br.com.ufjf.dcc193.trab03.Models;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+@Entity
 public class Item {
 
     @Id
@@ -15,23 +17,23 @@ public class Item {
     private Long id;
     private String titulo;
     
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    private Set<Anotacao> anotacoes;
-
-    @OneToMany(mappedBy = "itemEtiqueta", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "itemEtiqueta")
     private Set<ItemEtiqueta> itemEtiquetas;
-
-    @OneToMany(mappedBy = "itemVinculo", cascade = CascadeType.ALL)
-    private Set<ItemVinculo> itemVinculo;
 
     public Item() {
     }
 
-    public Item(String titulo, Set<Anotacao> anotacoes, Set<ItemEtiqueta> itemEtiquetas, Set<ItemVinculo> itemVinculo) {
+    public Item(String titulo, Set<ItemEtiqueta> itemEtiquetas) {
         this.titulo = titulo;
-        this.anotacoes = anotacoes;
         this.itemEtiquetas = itemEtiquetas;
-        this.itemVinculo = itemVinculo;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitulo() {
@@ -50,29 +52,6 @@ public class Item {
         this.itemEtiquetas = itemEtiquetas;
     }
 
-    public Set<ItemVinculo> getItemVinculo() {
-        return itemVinculo;
-    }
-
-    public void setItemVinculo(Set<ItemVinculo> itemVinculo) {
-        this.itemVinculo = itemVinculo;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Set<Anotacao> getAnotacoes() {
-        return anotacoes;
-    }
-
-    public void setAnotacoes(Set<Anotacao> anotacoes) {
-        this.anotacoes = anotacoes;
-    }
-
+    
     
 }

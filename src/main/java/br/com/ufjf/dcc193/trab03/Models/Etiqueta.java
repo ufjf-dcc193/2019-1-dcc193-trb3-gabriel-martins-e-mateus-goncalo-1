@@ -19,7 +19,7 @@ public class Etiqueta {
     private String descricao;
     private String url;
 
-    @OneToMany(mappedBy = "etiquetaItem", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "etiquetaItem")
     private Set<ItemEtiqueta> itemEtiquetas;
 
     public Etiqueta(Long id, String titulo, String descricao, String url) {
