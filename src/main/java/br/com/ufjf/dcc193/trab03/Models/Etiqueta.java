@@ -1,9 +1,13 @@
 package br.com.ufjf.dcc193.trab03.Models;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Etiqueta {
@@ -14,6 +18,9 @@ public class Etiqueta {
     private String titulo;
     private String descricao;
     private String url;
+
+    @OneToMany(mappedBy = "etiquetaItem", cascade = CascadeType.ALL)
+    private Set<ItemEtiqueta> itemEtiquetas;
 
     public Etiqueta(Long id, String titulo, String descricao, String url) {
         this.id = id;
@@ -61,6 +68,14 @@ public class Etiqueta {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Set<ItemEtiqueta> getItemEtiquetas() {
+        return itemEtiquetas;
+    }
+
+    public void setItemEtiquetas(Set<ItemEtiqueta> itemEtiquetas) {
+        this.itemEtiquetas = itemEtiquetas;
     }
 
     
