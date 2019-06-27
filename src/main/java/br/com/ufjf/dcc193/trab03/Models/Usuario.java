@@ -1,9 +1,13 @@
 package br.com.ufjf.dcc193.trab03.Models;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Usuario {
@@ -15,6 +19,9 @@ public class Usuario {
     private String descricao;
     private String email;
     private String chave;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private Set<Anotacao> anotacoes;
 
     public Usuario (String email, String chave)
     {
@@ -72,5 +79,14 @@ public class Usuario {
     public void setChave(String chave) {
         this.chave = chave;
     }
+
+    public Set<Anotacao> getAnotacoes() {
+        return anotacoes;
+    }
+
+    public void setAnotacoes(Set<Anotacao> anotacoes) {
+        this.anotacoes = anotacoes;
+    }
+    
     
 }
