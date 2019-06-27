@@ -5,6 +5,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import br.com.ufjf.dcc193.trab03.Models.Usuario;
+
 @Controller
 public class HomeController {
 
@@ -13,15 +15,15 @@ public class HomeController {
     {
         if (session.getAttribute("usuarioLogado") != null)
         {   
-//            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-//            if (usuario.getEmail().equals("admin"))
-//            {
-//                return "principal-adm";
-//            }
-//            else
-//            {
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                return "principal-adm";
+            }
+            else
+            {
                 return "principal-usuario";
- //           }
+            }
         }
         else
         {
@@ -46,7 +48,7 @@ public class HomeController {
         }
         else
         {
-            return "index";
+            return "sobre";
         }
     }
 
