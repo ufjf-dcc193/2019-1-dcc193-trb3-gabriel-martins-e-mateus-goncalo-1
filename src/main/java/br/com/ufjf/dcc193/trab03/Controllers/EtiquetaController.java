@@ -13,17 +13,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.com.ufjf.dcc193.trab03.Models.Etiqueta;
 import br.com.ufjf.dcc193.trab03.Models.Usuario;
-import br.com.ufjf.dcc193.trab03.Persistence.UsuarioRepository;
+import br.com.ufjf.dcc193.trab03.Persistence.EtiquetaRepository;
 
 @Controller
-public class UsuarioController {
+public class EtiquetaController {
 
     @Autowired
-    private UsuarioRepository UsuarioRepository;
+    private EtiquetaRepository repositoryEtiquetas;
 
-    @RequestMapping(value = {"/lista-usuarios"}, method = RequestMethod.GET)
-    public ModelAndView carregaUsuarios (HttpSession session)
+    @RequestMapping(value = {"/lista-etiquetas"}, method = RequestMethod.GET)
+    public ModelAndView carregaEtiquetas (HttpSession session)
     {
         ModelAndView mv = new ModelAndView();
         if (session.getAttribute("usuarioLogado") != null)
@@ -31,13 +32,13 @@ public class UsuarioController {
             Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
             if (usuario.getEmail().equals("admin"))
             {
-                List<Usuario> usuarios = UsuarioRepository.findAll();
-                mv.addObject("usuarios", usuarios);
-                mv.setViewName("lista-usuarios");
+                mv.setViewName("redirect:principal-adm");
             }
             else
             {
-                mv.setViewName("redirect:principal-usuario");
+                List<Etiqueta> etiquetas = repositoryEtiquetas.findAll();
+                mv.addObject("etiquetas", etiquetas);
+                mv.setViewName("lista-etiquetas");
             }
         }
         else
@@ -49,7 +50,7 @@ public class UsuarioController {
         return mv;
     }
 
-    @RequestMapping(value = {"/cadastro-usuario"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/cadastro-etiqueta"}, method = RequestMethod.GET)
     public ModelAndView cadastroUsuario (HttpSession session)
     {
         ModelAndView mv = new ModelAndView();
@@ -58,13 +59,13 @@ public class UsuarioController {
             Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
             if (usuario.getEmail().equals("admin"))
             {
-                Usuario usuarioCadastro = new Usuario();
-                mv.addObject("usuario", usuarioCadastro);
-                mv.setViewName("cadastro-usuario");
+                mv.setViewName("redirect:principal-adm");
             }
             else
             {
-                mv.setViewName("redirect:principal-usuario");
+                Etiqueta etiqueta = new Etiqueta();
+                mv.addObject("etiqueta", etiqueta);
+                mv.setViewName("cadastro-etiqueta");
             }
         }
         else
@@ -76,8 +77,8 @@ public class UsuarioController {
         return mv;
     }
 
-    @RequestMapping(value = {"/cadastro-usuario"}, method = RequestMethod.POST)
-    public ModelAndView realizaCadastro (@Valid Usuario usuario, HttpSession session)
+    @RequestMapping(value = {"/cadastro-etiqueta"}, method = RequestMethod.POST)
+    public ModelAndView realizaCadastro (@Valid Etiqueta etiqueta, HttpSession session)
     {
         ModelAndView mv = new ModelAndView();
         if (session.getAttribute("usuarioLogado") != null)
@@ -85,20 +86,12 @@ public class UsuarioController {
             Usuario usuario2 = (Usuario) session.getAttribute("usuarioLogado");
             if (usuario2.getEmail().equals("admin"))
             {
-                Usuario testaEmail = UsuarioRepository.findByEmail(usuario.getEmail());
-                if (usuario != null && testaEmail == null)
-                {
-                    UsuarioRepository.save(usuario);
-                    mv.setViewName("redirect:lista-usuarios");
-                }               else
-                {
-                    mv.addObject("usuario", usuario);
-                    mv.setViewName("cadastro-usuario");
-                }
+                mv.setViewName("redirect:principal-adm");
             }
             else
             {
-                mv.setViewName("redirect:principal-usuario");
+                repositoryEtiquetas.save(etiqueta);
+                mv.setViewName("redirect:lista-etiquetas");
             }
         }
         else
@@ -108,7 +101,7 @@ public class UsuarioController {
         return mv;
     }    
     
-    @RequestMapping(value = {"/editar-usuario/{id}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/editar-etiqueta/{id}"}, method = RequestMethod.GET)
     public ModelAndView carregaEditar (@PathVariable(value = "id", required = true) Long id, HttpSession session)
     {
         ModelAndView mv = new ModelAndView();
@@ -117,15 +110,15 @@ public class UsuarioController {
             Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
             if (usuario.getEmail().equals("admin"))
             {
-                Usuario usuarioASerEditado = new Usuario();
-                usuarioASerEditado = UsuarioRepository.getOne(id);
-                mv.addObject("usuario", usuarioASerEditado);
-                mv.addObject("id", id);
-                mv.setViewName("editar-usuario");
+                mv.setViewName("redirect:principal-adm");
             }
             else
             {
-                mv.setViewName("redirect:principal-usuario");
+                Etiqueta etiquetaASerEditada = new Etiqueta();
+                etiquetaASerEditada = repositoryEtiquetas.getOne(id);
+                mv.addObject("etiqueta", etiquetaASerEditada);
+                mv.addObject("id", id);
+                mv.setViewName("editar-etiqueta");
             }
         }
         else
@@ -135,8 +128,8 @@ public class UsuarioController {
         return mv;
     }
 
-    @RequestMapping(value = {"/editar-usuario"}, method = RequestMethod.POST)
-    public ModelAndView realizaEditar (@RequestParam(value = "id", required = true) Long id, Usuario usuario, HttpSession session)
+    @RequestMapping(value = {"/editar-etiqueta"}, method = RequestMethod.POST)
+    public ModelAndView realizaEditar (@RequestParam(value = "id", required = true) Long id, Etiqueta etiqueta, HttpSession session)
     {
         ModelAndView mv = new ModelAndView();
         if (session.getAttribute("usuarioLogado") != null)
@@ -144,21 +137,22 @@ public class UsuarioController {
             Usuario usuario2 = (Usuario) session.getAttribute("usuarioLogado");
             if (usuario2.getEmail().equals("admin"))
             {
-                if (usuario != null)
-                {
-                    usuario.setId(id);
-                    UsuarioRepository.save(usuario);
-                    mv.setViewName("redirect:lista-usuarios");
-                }
-                else
-                {
-                    mv.addObject("usuario", usuario);
-                    mv.setViewName("editar-usuario");
-                }
+                mv.setViewName("redirect:principal-usuario");
             }
             else
             {
-                mv.setViewName("redirect:principal-usuario");
+                if (etiqueta != null)
+                {
+                    etiqueta.setId(id);
+                    repositoryEtiquetas.save(etiqueta);
+                    mv.setViewName("redirect:lista-etiquetas");
+                }
+                else
+                {
+                    mv.addObject("etiqueta", etiqueta);
+                    mv.setViewName("editar-usuario");
+                }
+
             }
         }
         else
@@ -168,7 +162,7 @@ public class UsuarioController {
         return mv;
     }     
 
-    @RequestMapping(value = { "/excluir-usuario/{id}" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/excluir-etiqueta/{id}" }, method = RequestMethod.GET)
     public ModelAndView carregaExcluir(@PathVariable(value = "id", required = true) Long id, HttpSession session) {
         ModelAndView mv = new ModelAndView();
         if (session.getAttribute("usuarioLogado") != null)
@@ -176,12 +170,12 @@ public class UsuarioController {
             Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
             if (usuario.getEmail().equals("admin"))
             {
-                UsuarioRepository.deleteById(id);
-                mv.setViewName("redirect:/lista-usuarios");
+                mv.setViewName("redirect:principal-adm");
             }
             else
             {
-                mv.setViewName("redirect:principal-usuarios");
+                repositoryEtiquetas.deleteById(id);
+                mv.setViewName("redirect:/lista-etiquetas");
             }
         }
         else
