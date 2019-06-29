@@ -2,6 +2,7 @@ package br.com.ufjf.dcc193.trab03.Controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -211,12 +212,9 @@ public class EtiquetaController {
             {
                 List<Etiqueta> equitasEnvio = new ArrayList<>();
                 Item item = itemRepository.getOne(id);
-                List<ItemEtiqueta> etiquetas = itemEtiquetaRepository.findAll();
+                Set<ItemEtiqueta> etiquetas = item.getItemEtiquetas();
                 for (ItemEtiqueta var : etiquetas) {
-                   if (var.getItem().getId().equals(item.getId()))
-                   {
-                       equitasEnvio.add(var.getEtiqueta());
-                    }
+                    equitasEnvio.add(var.getEtiqueta());
                 }
                 mv.addObject("id2", id);
                 mv.addObject("etiquetas", equitasEnvio);
@@ -294,6 +292,8 @@ public class EtiquetaController {
                     iE.setEtiqueta(etiqueta);
                     iE.setItem(item);
                     itemEtiquetaRepository.save(iE);
+                    item.getItemEtiquetas().add(iE);
+                    itemRepository.save(item);
                     mv.setViewName("redirect:/lista-itens");
                 }
             }

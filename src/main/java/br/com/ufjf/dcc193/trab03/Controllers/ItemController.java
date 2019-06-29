@@ -1,5 +1,6 @@
 package br.com.ufjf.dcc193.trab03.Controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.ufjf.dcc193.trab03.Models.Item;
+import br.com.ufjf.dcc193.trab03.Models.ItemEtiqueta;
 import br.com.ufjf.dcc193.trab03.Models.Usuario;
+import br.com.ufjf.dcc193.trab03.Persistence.ItemEtiquetaRepository;
 import br.com.ufjf.dcc193.trab03.Persistence.ItemRepository;
 
 @Controller
@@ -22,6 +25,8 @@ public class ItemController {
 
     @Autowired
     private ItemRepository repositoryItem;
+    @Autowired
+    private ItemEtiquetaRepository repositoryItemEtiqueta;    
 
     @RequestMapping(value = {"/lista-itens"}, method = RequestMethod.GET)
     public ModelAndView carregaItens (HttpSession session)
@@ -39,6 +44,40 @@ public class ItemController {
                 List<Item> itens = repositoryItem.findAll();
                 mv.addObject("itens", itens);
                 mv.setViewName("lista-itens");
+            }
+        }
+        else
+        {
+            Usuario usuario = new Usuario();
+            mv.addObject("usuario", usuario);
+            mv.setViewName("login");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = {"/listar-item-etiqueta/{id}"}, method = RequestMethod.GET)
+    public ModelAndView carregaItensEtiqueta (@PathVariable(value = "id", required = true) Long id, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                List<Item> itens = new ArrayList<>(); 
+                List<ItemEtiqueta> itemEtiquetas = repositoryItemEtiqueta.findAll();
+                for (ItemEtiqueta var : itemEtiquetas) {
+                    if (var.getEtiqueta().getId().equals(id))
+                    {
+                        itens.add(var.getItem());
+                    }
+                }
+                mv.addObject("itens", itens);
+                mv.setViewName("listar-item-etiqueta");
             }
         }
         else
