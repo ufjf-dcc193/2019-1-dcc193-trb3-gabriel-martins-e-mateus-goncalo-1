@@ -119,7 +119,7 @@ public class AnotacaoController {
     }
 
     @RequestMapping(value = {"/cadastro-item-anotacao"}, method = RequestMethod.POST)
-    public ModelAndView realizaEditar (@RequestParam(value = "id", required = true) Long id, Anotacao anotacao, HttpSession session)
+    public ModelAndView realizaCadastrar (@RequestParam(value = "id", required = true) Long id, Anotacao anotacao, HttpSession session)
     {
         ModelAndView mv = new ModelAndView();
         if (session.getAttribute("usuarioLogado") != null)
@@ -137,6 +137,85 @@ public class AnotacaoController {
                 anotacao.setDataDeInicio(dataSql);
                 anotacao.setUsuario(usuario2);
                 anotacao.setItem(item);
+                repositoryAnotacao.save(anotacao);
+                mv.setViewName("redirect:lista-itens");
+            }
+        }
+        else
+        {
+            mv.setViewName("redirect:login");
+        }            
+        return mv;
+    }     
+
+    @RequestMapping(value = { "/excluir-anotacao/{id}" }, method = RequestMethod.GET)
+    public ModelAndView carregaExcluirItemEtiqueta(@PathVariable(value = "id", required = true) Long id, HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                repositoryAnotacao.deleteById(id);
+                mv.setViewName("redirect:/lista-itens");
+            }
+        }
+        else
+        {
+            mv.setViewName("redirect:login");
+        }
+        return mv;    
+    }
+
+    @RequestMapping(value = {"/editar-anotacao/{id}"}, method = RequestMethod.GET)
+    public ModelAndView editarAnotacao (@PathVariable(value = "id", required = true) Long id, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                Anotacao anotacao = repositoryAnotacao.getOne(id);
+                mv.addObject("anotacao", anotacao);
+                mv.addObject("id2", id);
+                mv.setViewName("editar-anotacao");
+            }
+        }
+        else
+        {
+            Usuario usuario = new Usuario();
+            mv.addObject("usuario", usuario);
+            mv.setViewName("login");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = {"/editar-anotacao"}, method = RequestMethod.POST)
+    public ModelAndView realizaEditarAnotacao (@RequestParam(value = "id", required = true) Long id, Anotacao anotacao, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario2 = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario2.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                java.util.Date dataUtil = new java.util.Date();
+                java.sql.Date dataSql = new java.sql.Date(dataUtil.getTime());
+                anotacao.setDataDeAtualizacao(dataSql);
+                anotacao.setId(id);
                 repositoryAnotacao.save(anotacao);
                 mv.setViewName("redirect:lista-itens");
             }
