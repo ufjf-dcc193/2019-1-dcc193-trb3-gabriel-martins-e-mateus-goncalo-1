@@ -16,8 +16,10 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.ufjf.dcc193.trab03.Models.Anotacao;
 import br.com.ufjf.dcc193.trab03.Models.Item;
 import br.com.ufjf.dcc193.trab03.Models.Usuario;
+import br.com.ufjf.dcc193.trab03.Models.Vinculo;
 import br.com.ufjf.dcc193.trab03.Persistence.AnotacaoRepository;
 import br.com.ufjf.dcc193.trab03.Persistence.ItemRepository;
+import br.com.ufjf.dcc193.trab03.Persistence.VinculoRepository;
 
 @Controller
 public class AnotacaoController {
@@ -26,6 +28,8 @@ public class AnotacaoController {
     private AnotacaoRepository repositoryAnotacao;
     @Autowired
     private ItemRepository repositoryItem;
+    @Autowired
+    private VinculoRepository repositoryVinculo;
 
     @RequestMapping(value = {"/item-anotacoes/{id}"}, method = RequestMethod.GET)
     public ModelAndView carregaItensAnotacao (@PathVariable(value = "id", required = true) Long id, HttpSession session)
@@ -45,6 +49,34 @@ public class AnotacaoController {
                 mv.addObject("id2", id);  
                 mv.addObject("item", item);              
                 mv.setViewName("item-anotacoes");
+            }
+        }
+        else
+        {
+            Usuario usuario = new Usuario();
+            mv.addObject("usuario", usuario);
+            mv.setViewName("login");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = {"/vinculo-anotacoes/{id}"}, method = RequestMethod.GET)
+    public ModelAndView carregaVinculoAnotacoes (@PathVariable(value = "id", required = true) Long id, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                Vinculo vinculo = repositoryVinculo.getOne(id);
+                mv.addObject("anotacoes", vinculo.getAnotacoes());
+                mv.addObject("id2", id);  
+                mv.setViewName("vinculo-anotacoes");
             }
         }
         else
@@ -148,6 +180,64 @@ public class AnotacaoController {
         return mv;
     }     
 
+    @RequestMapping(value = {"/adicionar-anotacao-vinculo/{id}"}, method = RequestMethod.GET)
+    public ModelAndView adicionarVinculoAnotacao (@PathVariable(value = "id", required = true) Long id, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                Anotacao anotacao = new Anotacao();
+                mv.addObject("anotacao", anotacao);
+                mv.addObject("id2", id);
+                mv.setViewName("cadastro-vinculo-anotacao");
+            }
+        }
+        else
+        {
+            Usuario usuario = new Usuario();
+            mv.addObject("usuario", usuario);
+            mv.setViewName("login");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = {"/cadastro-vinculo-anotacao"}, method = RequestMethod.POST)
+    public ModelAndView realizaCadastrarAnotacaoVinculo (@RequestParam(value = "id", required = true) Long id, Anotacao anotacao, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario2 = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario2.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                Vinculo vinculo = repositoryVinculo.getOne(id);
+                java.util.Date dataUtil = new java.util.Date();
+                java.sql.Date dataSql = new java.sql.Date(dataUtil.getTime());
+                anotacao.setDataDeInicio(dataSql);
+                anotacao.setUsuario(usuario2);
+                anotacao.setVinculo(vinculo);
+                repositoryAnotacao.save(anotacao);
+                mv.setViewName("redirect:lista-itens");
+            }
+        }
+        else
+        {
+            mv.setViewName("redirect:login");
+        }            
+        return mv;
+    }     
+
     @RequestMapping(value = { "/excluir-anotacao/{id}" }, method = RequestMethod.GET)
     public ModelAndView carregaExcluirItemEtiqueta(@PathVariable(value = "id", required = true) Long id, HttpSession session) {
         ModelAndView mv = new ModelAndView();
@@ -212,6 +302,11 @@ public class AnotacaoController {
             }
             else
             {
+                Anotacao anotacao2 = repositoryAnotacao.getOne(id);
+                anotacao.setDataDeInicio(anotacao2.getDataDeInicio());
+                anotacao.setItem(anotacao2.getItem());
+                anotacao.setVinculo(anotacao2.getVinculo());
+                anotacao.setUsuario(anotacao2.getUsuario());
                 java.util.Date dataUtil = new java.util.Date();
                 java.sql.Date dataSql = new java.sql.Date(dataUtil.getTime());
                 anotacao.setDataDeAtualizacao(dataSql);

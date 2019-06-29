@@ -31,10 +31,10 @@
                   <td th:text="*{vinculoEntrada.titulo}"></td>
                   <td th:text="*{vinculoSaida.titulo}"></td>
                   <td>
-                    <a th:href="@{/excluir-etiqueta-item/{id}/{id2} (id=*{id}, id2=${id2})}" ><i class="material-icons">&#xe24c;</i></a>
+                    <a th:href="@{/vinculo-anotacoes/{id} (id=*{id})}" ><i class="material-icons">&#xe24c;</i></a>
                   </td>
                   <td>
-                    <a th:href="@{/excluir-etiqueta-item/{id}/{id2} (id=*{id}, id2=${id2})}" ><i class="material-icons">&#xe431;</i></a>
+                    <a th:href="@{/vinculo-etiquetas/{id} (id=*{id})}" ><i class="material-icons">&#xe431;</i></a>
                   </td>
                   <td>
                     <a th:href="@{/excluir-vinculo/{id} (id=*{id})}" ><i class="material-icons">&#xe872;</i></a>
