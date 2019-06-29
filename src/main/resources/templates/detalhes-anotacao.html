@@ -1,0 +1,44 @@
+<div th:replace="fragments/cabecalhoUsuario :: cabecalhoUsuario"></div>
+
+<main role="main">
+
+  <div class="jumbotron">
+    <div class="container">
+      <h1 class="display-3">Detalhes de uma anotação</h1>
+    </div>
+  </div>
+
+  <div class="container">
+      <div class="row">
+         <div class="col-md-4">
+                <div class="form-group">
+                    <label for="tituloAnotacao">Título da anotação:</label>
+                    <label th:text="${anotacao.titulo}"></label>
+                    <br/>
+                    <label for="urlAnotacao">Link da anotação:</label>
+                    <a th:href="${anotacao.url}"> <label th:text="${anotacao.url}"></label> </a>
+                    <br/>
+                    <label for="usuario">Usuario:</label>
+                    <label th:text="${anotacao.usuario.nome}"></label>
+                </div> 
+           </div>
+           <div class="col-md-4">
+              <div class="form-group">
+                Sobre/Descrição: <textarea th:field="${anotacao.descricao}" th:text="${anotacao.descricao}" th:required="required">Texto sobre a descrição</textarea>        
+              </div>  
+           </div>
+           <div class="col-md-4">
+              <div class="form-group">
+                      <label for="inicio">Data de criação:</label>
+                      <label th:text="${dataDeInicio}"></label>
+                      <label for="modificacao">Data de modificação:</label>
+                      <label th:text="${dataDeAtualizacao}"></label>
+                </div>   
+            </div>
+        </div>
+    <hr>
+  </div>
+
+</main>
+
+<div th:replace="fragments/rodape :: rodape"></div>

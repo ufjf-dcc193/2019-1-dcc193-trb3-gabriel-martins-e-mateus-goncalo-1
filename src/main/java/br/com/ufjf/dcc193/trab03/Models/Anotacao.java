@@ -18,6 +18,7 @@ public class Anotacao {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String titulo;
+    private String descricao;
     private String url;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -40,8 +41,9 @@ public class Anotacao {
     public Anotacao() {
     }
 
-    public Anotacao(String titulo, String url, Date dataDeInicio) {
+    public Anotacao(String titulo, String descricao, String url, Date dataDeInicio) {
         this.titulo = titulo;
+        this.descricao = descricao;
         this.url = url;
         this.dataDeInicio = dataDeInicio;
     }
@@ -108,6 +110,14 @@ public class Anotacao {
 
     public void setVinculo(Vinculo vinculo) {
         this.vinculo = vinculo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     
