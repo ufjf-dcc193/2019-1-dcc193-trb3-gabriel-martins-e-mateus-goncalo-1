@@ -19,9 +19,11 @@ import br.com.ufjf.dcc193.trab03.Models.Etiqueta;
 import br.com.ufjf.dcc193.trab03.Models.Item;
 import br.com.ufjf.dcc193.trab03.Models.ItemEtiqueta;
 import br.com.ufjf.dcc193.trab03.Models.Usuario;
+import br.com.ufjf.dcc193.trab03.Models.VinculoEtiqueta;
 import br.com.ufjf.dcc193.trab03.Persistence.EtiquetaRepository;
 import br.com.ufjf.dcc193.trab03.Persistence.ItemEtiquetaRepository;
 import br.com.ufjf.dcc193.trab03.Persistence.ItemRepository;
+import br.com.ufjf.dcc193.trab03.Persistence.VinculoEtiquetaRepository;
 
 @Controller
 public class EtiquetaController {
@@ -34,6 +36,9 @@ public class EtiquetaController {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private VinculoEtiquetaRepository repositoryVinculoEtiqueta;
 
     @RequestMapping(value = {"/lista-etiquetas"}, method = RequestMethod.GET)
     public ModelAndView carregaEtiquetas (HttpSession session)
@@ -310,8 +315,7 @@ public class EtiquetaController {
         return mv;
     }
 
-
-    @RequestMapping(value = { "/excluir-etiqueta/{id}/{id2}" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/excluir-etiqueta-item/{id}/{id2}" }, method = RequestMethod.GET)
     public ModelAndView carregaExcluirItemEtiqueta(@PathVariable(value = "id", required = true) Long id, 
     @PathVariable(value = "id2", required = true) Long id2, HttpSession session) {
         ModelAndView mv = new ModelAndView();
@@ -331,7 +335,37 @@ public class EtiquetaController {
                         itemEtiquetaRepository.deleteById(var.getId());
                     }
                 }
-                mv.setViewName("redirect:lista-itens");
+                mv.setViewName("redirect:/lista-itens");
+            }
+        }
+        else
+        {
+            mv.setViewName("redirect:login");
+        }
+        return mv;    
+    }
+
+    @RequestMapping(value = { "/excluir-etiqueta-vinculo/{id}/{id2}" }, method = RequestMethod.GET)
+    public ModelAndView carregaExcluirVinculoEtiqueta(@PathVariable(value = "id", required = true) Long id, 
+    @PathVariable(value = "id2", required = true) Long id2, HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                List<VinculoEtiqueta> etiquetas = repositoryVinculoEtiqueta.findAll();
+                for (VinculoEtiqueta var : etiquetas) {
+                    if (var.getVinculoEtiqueta().getId().equals(id2) && var.getEtiquetaVinculo().getId().equals(id))
+                    {
+                        repositoryVinculoEtiqueta.deleteById(var.getId());
+                    }
+                }
+                mv.setViewName("redirect:/lista-itens");
             }
         }
         else

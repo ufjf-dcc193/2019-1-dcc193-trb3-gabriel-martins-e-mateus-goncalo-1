@@ -2,6 +2,7 @@ package br.com.ufjf.dcc193.trab03.Controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
@@ -13,10 +14,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.com.ufjf.dcc193.trab03.Models.Etiqueta;
 import br.com.ufjf.dcc193.trab03.Models.Item;
 import br.com.ufjf.dcc193.trab03.Models.Usuario;
 import br.com.ufjf.dcc193.trab03.Models.Vinculo;
+import br.com.ufjf.dcc193.trab03.Models.VinculoEtiqueta;
+import br.com.ufjf.dcc193.trab03.Persistence.EtiquetaRepository;
 import br.com.ufjf.dcc193.trab03.Persistence.ItemRepository;
+import br.com.ufjf.dcc193.trab03.Persistence.VinculoEtiquetaRepository;
 import br.com.ufjf.dcc193.trab03.Persistence.VinculoRepository;
 
 @Controller
@@ -27,6 +32,12 @@ public class VinculoController {
 
     @Autowired
     private VinculoRepository repositoryVinculo;
+
+    @Autowired
+    private VinculoEtiquetaRepository repositoryVinculoEtiqueta; 
+
+    @Autowired
+    private EtiquetaRepository repositoryEtiqueta;
 
     @RequestMapping(value = {"/item-vinculos/{id}"}, method = RequestMethod.GET)
     public ModelAndView carregaItensEtiqueta (@PathVariable(value = "id", required = true) Long id, HttpSession session)
@@ -49,6 +60,39 @@ public class VinculoController {
                 mv.addObject("id2", id);  
                 mv.addObject("item", item);              
                 mv.setViewName("item-vinculos");
+            }
+        }
+        else
+        {
+            Usuario usuario = new Usuario();
+            mv.addObject("usuario", usuario);
+            mv.setViewName("login");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = {"/vinculo-etiquetas/{id}"}, method = RequestMethod.GET)
+    public ModelAndView carregaVinculoEtiquetas (@PathVariable(value = "id", required = true) Long id, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                List<Etiqueta> equitasEnvio = new ArrayList<>();
+                Vinculo vinculo = repositoryVinculo.getOne(id);
+                Set<VinculoEtiqueta> etiquetas = vinculo.getVinculoEtiqueta();
+                for (VinculoEtiqueta var : etiquetas) {
+                    equitasEnvio.add(var.getEtiquetaVinculo());
+                }
+                mv.addObject("id2", id);
+                mv.addObject("etiquetas", equitasEnvio);
+                mv.setViewName("vinculo-etiquetas");
             }
         }
         else
@@ -170,5 +214,83 @@ public class VinculoController {
         }
         return mv;
     }
+
+    @RequestMapping(value = {"/adicionar-vinculo-etiquetas/{id}"}, method = RequestMethod.GET)
+    public ModelAndView adicionarVinculoEtiqueta (@PathVariable(value = "id", required = true) Long id, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                List<Etiqueta> etiquetas = repositoryEtiqueta.findAll();
+                mv.addObject("id2", id);
+                mv.addObject("etiquetas", etiquetas);
+                mv.setViewName("adicionar-vinculo-etiquetas");
+            }
+        }
+        else
+        {
+            Usuario usuario = new Usuario();
+            mv.addObject("usuario", usuario);
+            mv.setViewName("login");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = {"/adicionar-vinculo-etiquetas/{id}/{id2}"}, method = RequestMethod.GET)
+    public ModelAndView adicionarVinculoEtiqueta2 (@PathVariable(value = "id", required = true) Long id, 
+    @PathVariable(value = "id2", required = true) Long id2, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                Boolean encontrou = false;
+                List<VinculoEtiqueta> etiquetas = repositoryVinculoEtiqueta.findAll();
+                for (VinculoEtiqueta var : etiquetas) {
+                    if (var.getVinculoEtiqueta().getId().equals(id2) && var.getEtiquetaVinculo().getId().equals(id))
+                    {
+                        encontrou = true;
+                    }
+                }
+                if (encontrou)
+                {
+                    mv.setViewName("ja-existe-relacionamento");
+                }
+                else
+                {
+                    Etiqueta etiqueta = repositoryEtiqueta.getOne(id);
+                    Vinculo vinculo = repositoryVinculo.getOne(id2);
+                    VinculoEtiqueta vE = new VinculoEtiqueta();
+                    vE.setEtiquetaVinculo(etiqueta);
+                    vE.setVinculoEtiqueta(vinculo);
+                    repositoryVinculoEtiqueta.save(vE);
+                    vinculo.getVinculoEtiqueta().add(vE);
+                    repositoryVinculo.save(vinculo);
+                    mv.setViewName("redirect:/lista-itens");
+                }
+            }
+        }
+        else
+        {
+            Usuario usuario = new Usuario();
+            mv.addObject("usuario", usuario);
+            mv.setViewName("login");
+        }
+        return mv;
+    }
+
 
 }
