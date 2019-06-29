@@ -1,5 +1,8 @@
 package br.com.ufjf.dcc193.trab03.Controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.ufjf.dcc193.trab03.Models.Item;
 import br.com.ufjf.dcc193.trab03.Models.Usuario;
+import br.com.ufjf.dcc193.trab03.Models.Vinculo;
 import br.com.ufjf.dcc193.trab03.Persistence.ItemRepository;
 import br.com.ufjf.dcc193.trab03.Persistence.VinculoRepository;
 
@@ -36,9 +41,13 @@ public class VinculoController {
             }
             else
             {
+                List<Vinculo> vinculos = new ArrayList<>();
                 Item item = repositoryItem.getOne(id);
-                item.getVinculosEntrada();
-                item.getVinculosSaida();                
+                vinculos.addAll(item.getVinculosEntrada());
+                vinculos.addAll(item.getVinculosSaida());    
+                mv.addObject("vinculos", vinculos);
+                mv.addObject("id2", id);  
+                mv.addObject("item", item);              
                 mv.setViewName("item-vinculos");
             }
         }
@@ -51,5 +60,115 @@ public class VinculoController {
         return mv;
     }
 
+    @RequestMapping(value = {"/adicionar-item-vinculo/{id}"}, method = RequestMethod.GET)
+    public ModelAndView adicionarItemVinculo (@PathVariable(value = "id", required = true) Long id, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                List<Item> itens = new ArrayList<>();
+                for (Item var : repositoryItem.findAll()) {
+                    if (!var.getId().equals(id))
+                    {
+                        itens.add(var);
+                    }                    
+                }
+                mv.addObject("id2", id);
+                mv.addObject("itens", itens);
+                mv.setViewName("adicionar-item-vinculos");
+            }
+        }
+        else
+        {
+            Usuario usuario = new Usuario();
+            mv.addObject("usuario", usuario);
+            mv.setViewName("login");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = {"/adicionar-item-vinculo/{id}/{id2}"}, method = RequestMethod.GET)
+    public ModelAndView adicionarItemEtiqueta2 (@PathVariable(value = "id", required = true) Long id, 
+    @PathVariable(value = "id2", required = true) Long id2, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                Boolean encontrou = false;
+                List<Vinculo> vinculos = repositoryVinculo.findAll();
+                for (Vinculo var : vinculos) {
+                    if (var.getVinculoEntrada().getId().equals(id2) && var.getVinculoSaida().getId().equals(id))
+                    {
+                        encontrou = true;
+                    }
+                }
+                if (encontrou)
+                {
+                    mv.setViewName("ja-existe-relacionamento");
+                }
+                else
+                {
+                    Vinculo vinculo = new Vinculo();
+                    Item itemEntrada = repositoryItem.getOne(id2);
+                    Item itemSaida = repositoryItem.getOne(id);
+                    vinculo.setVinculoEntrada(itemEntrada);
+                    vinculo.setVinculoSaida(itemSaida);
+                    itemEntrada.getVinculosEntrada().add(vinculo);
+                    itemSaida.getVinculosSaida().add(vinculo);
+                    repositoryItem.save(itemEntrada);
+                    repositoryItem.save(itemSaida);
+                    repositoryVinculo.save(vinculo);
+                    mv.setViewName("redirect:/lista-itens");
+                }
+            }
+        }
+        else
+        {
+            Usuario usuario = new Usuario();
+            mv.addObject("usuario", usuario);
+            mv.setViewName("login");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = {"/excluir-vinculo/{id}"}, method = RequestMethod.GET)
+    public ModelAndView excluirVinculo (@PathVariable(value = "id", required = true) Long id, HttpSession session)
+    {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                repositoryVinculo.deleteById(id);
+                mv.setViewName("redirect:/lista-itens");
+            }
+        }
+        else
+        {
+            Usuario usuario = new Usuario();
+            mv.addObject("usuario", usuario);
+            mv.setViewName("login");
+        }
+        return mv;
+    }
 
 }

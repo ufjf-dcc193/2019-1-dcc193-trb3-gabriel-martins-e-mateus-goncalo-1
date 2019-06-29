@@ -216,6 +216,7 @@ public class EtiquetaController {
                 for (ItemEtiqueta var : etiquetas) {
                     equitasEnvio.add(var.getEtiqueta());
                 }
+                mv.addObject("item", item);
                 mv.addObject("id2", id);
                 mv.addObject("etiquetas", equitasEnvio);
                 mv.setViewName("item-etiquetas");
@@ -243,8 +244,10 @@ public class EtiquetaController {
             }
             else
             {
+                Item item = itemRepository.getOne(id);
                 List<Etiqueta> etiquetas = repositoryEtiquetas.findAll();
                 mv.addObject("id2", id);
+                mv.addObject("item", item);
                 mv.addObject("etiquetas", etiquetas);
                 mv.setViewName("adicionar-item-etiquetas");
             }

@@ -4,7 +4,7 @@
 
     <div class="jumbotron">
         <div class="container">
-          <h4 class="display-10">Todos os itens da etiqueta</h4>
+          <h4 th:text="${etiqueta.titulo}" class="display-10"></h4>
         </div>
       </div>    
 
@@ -28,13 +28,13 @@
                 <tr th:each="item: ${itens}" th:object="${item}">
                     <td th:text="*{titulo}"></td>  
                     <td> 
-                      <a th:href="@{/item-anotacoes/{id}/(id=*{id})}" ><i class="material-icons">&#xe241;</i></a>
+                      <a th:href="@{/item-anotacoes/{id}/(id=*{id})}" ><i class="material-icons">&#xe24c;</i></a>
                     </td>
                     <td> 
-                      <a th:href="@{/item-vinculos/{id}/(id=*{id})}" ><i class="material-icons">&#xe241;</i></a>
+                      <a th:href="@{/item-vinculos/{id}/(id=*{id})}" ><i class="material-icons">&#xe39d;</i></a>
                     </td>
                     <td> 
-                      <a th:href="@{/item-etiquetas/{id}/(id=*{id})}" ><i class="material-icons">&#xe241;</i></a>
+                      <a th:href="@{/item-etiquetas/{id}/(id=*{id})}" ><i class="material-icons">&#xe431;</i></a>
                     </td>
                     <td>
                       <a th:href="@{/editar-item/{id}/(id=*{id})}" ><i class="material-icons">&#xe254;</i></a>

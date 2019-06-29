@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.com.ufjf.dcc193.trab03.Models.Etiqueta;
 import br.com.ufjf.dcc193.trab03.Models.Item;
 import br.com.ufjf.dcc193.trab03.Models.ItemEtiqueta;
 import br.com.ufjf.dcc193.trab03.Models.Usuario;
+import br.com.ufjf.dcc193.trab03.Persistence.EtiquetaRepository;
 import br.com.ufjf.dcc193.trab03.Persistence.ItemEtiquetaRepository;
 import br.com.ufjf.dcc193.trab03.Persistence.ItemRepository;
 
@@ -27,6 +29,8 @@ public class ItemController {
     private ItemRepository repositoryItem;
     @Autowired
     private ItemEtiquetaRepository repositoryItemEtiqueta;    
+    @Autowired
+    private EtiquetaRepository repositoryEtiqueta;
 
     @RequestMapping(value = {"/lista-itens"}, method = RequestMethod.GET)
     public ModelAndView carregaItens (HttpSession session)
@@ -68,6 +72,7 @@ public class ItemController {
             }
             else
             {
+                Etiqueta etiqueta = repositoryEtiqueta.getOne(id);
                 List<Item> itens = new ArrayList<>(); 
                 List<ItemEtiqueta> itemEtiquetas = repositoryItemEtiqueta.findAll();
                 for (ItemEtiqueta var : itemEtiquetas) {
@@ -76,6 +81,7 @@ public class ItemController {
                         itens.add(var.getItem());
                     }
                 }
+                mv.addObject("etiqueta", etiqueta);
                 mv.addObject("itens", itens);
                 mv.setViewName("listar-item-etiqueta");
             }
