@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.ufjf.dcc193.trab03.Models.Etiqueta;
@@ -292,5 +291,34 @@ public class VinculoController {
         return mv;
     }
 
+    @RequestMapping(value = { "/excluir-etiqueta-vinculo/{id}/{id2}" }, method = RequestMethod.GET)
+    public ModelAndView carregaExcluirVinculoEtiqueta(@PathVariable(value = "id", required = true) Long id, 
+    @PathVariable(value = "id2", required = true) Long id2, HttpSession session) {
+        ModelAndView mv = new ModelAndView();
+        if (session.getAttribute("usuarioLogado") != null)
+        {   
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getEmail().equals("admin"))
+            {
+                mv.setViewName("redirect:principal-adm");
+            }
+            else
+            {
+                List<VinculoEtiqueta> etiquetas = repositoryVinculoEtiqueta.findAll();
+                for (VinculoEtiqueta var : etiquetas) {
+                    if (var.getVinculoEtiqueta().getId().equals(id2) && var.getEtiquetaVinculo().getId().equals(id))
+                    {
+                        repositoryVinculoEtiqueta.deleteById(var.getId());
+                    }
+                }
+                mv.setViewName("redirect:/lista-itens");
+            }
+        }
+        else
+        {
+            mv.setViewName("redirect:login");
+        }
+        return mv;    
+    }
 
 }
